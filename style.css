@@ -1,63 +1,50 @@
-html, body{
-width:100%;
+body{
 margin:0;
-padding:0;
-overflow-x:hidden;
 font-family:system-ui;
 background:#f2f2f2;
+padding:12px;
 }
 
 header{
 text-align:center;
-padding:15px;
-}
-
-h1{
-font-size:22px;
+margin-bottom:15px;
 }
 
 #tabs{
 display:flex;
 flex-wrap:wrap;
 gap:8px;
-padding:10px;
+margin-bottom:10px;
 }
 
 .tab{
 padding:10px 14px;
-background:white;
+background:#fff;
 border-radius:10px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-font-size:14px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
 cursor:pointer;
 }
 
 .tab.active{
 background:#2e7d32;
-color:white;
+color:#fff;
 }
 
 .addSetor{
-margin:10px;
-padding:12px;
 background:#ff9800;
 color:white;
+padding:10px 14px;
 border:none;
 border-radius:10px;
-font-size:14px;
+margin-bottom:10px;
 }
 
 .setor{
 background:white;
-margin:10px;
 padding:15px;
 border-radius:12px;
 box-shadow:0 2px 6px rgba(0,0,0,0.1);
-overflow:hidden;
-}
-
-.setor.active{
-display:block;
+margin-bottom:10px;
 }
 
 .item{
@@ -67,54 +54,41 @@ gap:8px;
 margin-bottom:12px;
 }
 
-.item input{
+input{
 width:100%;
 padding:12px;
-font-size:15px;
 border-radius:8px;
 border:1px solid #ccc;
+font-size:15px;
 box-sizing:border-box;
-}
-
-button{
-border:none;
-cursor:pointer;
 }
 
 .setor button{
 width:100%;
 padding:12px;
-background:#eeeeee;
 border-radius:8px;
-margin-top:6px;
+border:none;
+background:#eee;
 }
 
 .finalizar{
-width:calc(100% - 20px);
-margin:10px;
-padding:16px;
+width:100%;
 background:#2e7d32;
 color:white;
-border-radius:10px;
-font-size:16px;
-}
-
-#pedidoFinal{
-margin:15px;
-background:white;
 padding:15px;
+border:none;
 border-radius:12px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+font-size:16px;
+margin-top:10px;
 }
 
 textarea{
 width:100%;
 height:220px;
-padding:12px;
+padding:10px;
 border-radius:8px;
 border:1px solid #ccc;
-box-sizing:border-box;
-margin-bottom:10px;
+margin-top:10px;
 }
 
 .hidden{
