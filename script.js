@@ -2,8 +2,10 @@ const setores = ["Bebidas","Confeitaria","Panificação"]
 
 let dados = JSON.parse(localStorage.getItem("pedidos")) || {}
 
-setores.forEach(s=>{
-if(!dados[s]) dados[s] = {}
+setores.forEach(setor=>{
+if(!dados[setor]){
+dados[setor]={}
+}
 })
 
 function salvar(){
@@ -13,27 +15,28 @@ localStorage.setItem("pedidos",JSON.stringify(dados))
 function render(){
 
 const container = document.getElementById("setores")
+
 container.innerHTML=""
 
 setores.forEach(setor=>{
 
-const box = document.createElement("div")
+const box=document.createElement("div")
 box.className="setor"
 
-const header = document.createElement("div")
+const header=document.createElement("div")
 header.className="setorHeader"
 
-const titulo = document.createElement("span")
+const titulo=document.createElement("span")
 titulo.innerText=setor
 
-const limpar = document.createElement("button")
-limpar.innerText="🗑"
-limpar.className="lixeira"
+const limparSetor=document.createElement("button")
+limparSetor.innerText="🗑"
+limparSetor.className="lixeira"
 
-limpar.onclick=()=>{
+limparSetor.onclick=()=>{
 
-for(let p in dados[setor]){
-dados[setor][p] = ""
+for(let produto in dados[setor]){
+dados[setor][produto]=""
 }
 
 salvar()
@@ -42,76 +45,72 @@ render()
 }
 
 header.appendChild(titulo)
-header.appendChild(limpar)
+header.appendChild(limparSetor)
 
 box.appendChild(header)
 
-for(let prod in dados[setor]){
+for(let produto in dados[setor]){
 
-const linha = document.createElement("div")
+const linha=document.createElement("div")
 linha.className="produto"
 
-const nome = document.createElement("span")
-nome.innerText=prod
+const nome=document.createElement("span")
+nome.innerText=produto
 
-const qtd = document.createElement("input")
-qtd.type="number"
-qtd.value=dados[setor][prod]
+const input=document.createElement("input")
+input.type="number"
+input.value=dados[setor][produto]
 
-qtd.oninput=()=>{
-dados[setor][prod] = qtd.value
+input.oninput=()=>{
+dados[setor][produto]=input.value
 salvar()
 }
 
-const btns = document.createElement("div")
-btns.className="qtdBtns"
+const botoes=document.createElement("div")
+botoes.className="qtdBtns"
 
-;[1,2,5,10,20].forEach(n=>{
+;[1,2,5,10,20].forEach(valor=>{
 
-const b = document.createElement("button")
-
-b.innerText=n
+const b=document.createElement("button")
+b.innerText=valor
 
 b.onclick=()=>{
 
-let atual = parseInt(qtd.value) || 0
+let atual=parseInt(input.value)||0
 
-qtd.value = atual + n
+input.value=atual+valor
 
-dados[setor][prod] = qtd.value
+dados[setor][produto]=input.value
 
 salvar()
 
 }
 
-btns.appendChild(b)
+botoes.appendChild(b)
 
 })
 
-/* limpar apenas quantidade */
-
-const limparItem = document.createElement("button")
+const limparItem=document.createElement("button")
 limparItem.innerText="🧹"
 
 limparItem.onclick=()=>{
 
-qtd.value=""
-dados[setor][prod]=""
+input.value=""
+
+dados[setor][produto]=""
 
 salvar()
 
 }
 
-/* excluir produto */
+const excluirItem=document.createElement("button")
+excluirItem.innerText="❌"
 
-const excluirProduto = document.createElement("button")
-excluirProduto.innerText="🗑"
-
-excluirProduto.onclick=()=>{
+excluirItem.onclick=()=>{
 
 if(confirm("Excluir produto?")){
 
-delete dados[setor][prod]
+delete dados[setor][produto]
 
 salvar()
 
@@ -122,28 +121,26 @@ render()
 }
 
 linha.appendChild(nome)
-linha.appendChild(qtd)
-linha.appendChild(btns)
+linha.appendChild(input)
+linha.appendChild(botoes)
 linha.appendChild(limparItem)
-linha.appendChild(excluirProduto)
+linha.appendChild(excluirItem)
 
 box.appendChild(linha)
 
 }
 
-const add = document.createElement("button")
-
+const add=document.createElement("button")
 add.innerText="+ Produto"
-
 add.className="addProduto"
 
 add.onclick=()=>{
 
-let nome = prompt("Produto")
+let nome=prompt("Nome do produto")
 
 if(!nome) return
 
-dados[setor][nome] = ""
+dados[setor][nome]=""
 
 salvar()
 
@@ -163,7 +160,7 @@ render()
 
 document.getElementById("finalizarBtn").onclick=()=>{
 
-const final = document.getElementById("pedidoFinal")
+const final=document.getElementById("pedidoFinal")
 
 final.innerHTML=""
 
@@ -171,11 +168,11 @@ for(let setor in dados){
 
 let itens=""
 
-for(let prod in dados[setor]){
+for(let produto in dados[setor]){
 
-if(dados[setor][prod] > 0){
+if(dados[setor][produto]>0){
 
-itens += `<div>${prod} - ${dados[setor][prod]}</div>`
+itens+=`<div>${produto} - ${dados[setor][produto]}</div>`
 
 }
 
@@ -183,7 +180,7 @@ itens += `<div>${prod} - ${dados[setor][prod]}</div>`
 
 if(itens){
 
-final.innerHTML += `<h3>${setor}</h3>${itens}`
+final.innerHTML+=`<h3>${setor}</h3>${itens}`
 
 }
 
@@ -194,7 +191,9 @@ document.getElementById("modal").style.display="flex"
 }
 
 function fecharModal(){
+
 document.getElementById("modal").style.display="none"
+
 }
 
 function copiarPedido(){
@@ -205,11 +204,11 @@ for(let setor in dados){
 
 let itens=""
 
-for(let prod in dados[setor]){
+for(let produto in dados[setor]){
 
-if(dados[setor][prod] > 0){
+if(dados[setor][produto]>0){
 
-itens += `${prod} - ${dados[setor][prod]}\n`
+itens+=`${produto} - ${dados[setor][produto]}\n`
 
 }
 
@@ -217,7 +216,7 @@ itens += `${prod} - ${dados[setor][prod]}\n`
 
 if(itens){
 
-texto += `${setor}\n${itens}\n`
+texto+=`${setor}\n${itens}\n`
 
 }
 
