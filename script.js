@@ -13,7 +13,6 @@ localStorage.setItem("pedidos",JSON.stringify(dados))
 function render(){
 
 const container = document.getElementById("setores")
-
 container.innerHTML=""
 
 setores.forEach(setor=>{
@@ -89,9 +88,44 @@ btns.appendChild(b)
 
 })
 
+/* limpar apenas quantidade */
+
+const limparItem = document.createElement("button")
+limparItem.innerText="🧹"
+
+limparItem.onclick=()=>{
+
+qtd.value=""
+dados[setor][prod]=""
+
+salvar()
+
+}
+
+/* excluir produto */
+
+const excluirProduto = document.createElement("button")
+excluirProduto.innerText="🗑"
+
+excluirProduto.onclick=()=>{
+
+if(confirm("Excluir produto?")){
+
+delete dados[setor][prod]
+
+salvar()
+
+render()
+
+}
+
+}
+
 linha.appendChild(nome)
 linha.appendChild(qtd)
 linha.appendChild(btns)
+linha.appendChild(limparItem)
+linha.appendChild(excluirProduto)
 
 box.appendChild(linha)
 
@@ -160,9 +194,7 @@ document.getElementById("modal").style.display="flex"
 }
 
 function fecharModal(){
-
 document.getElementById("modal").style.display="none"
-
 }
 
 function copiarPedido(){
@@ -193,6 +225,6 @@ texto += `${setor}\n${itens}\n`
 
 navigator.clipboard.writeText(texto)
 
-alert("Copiado")
+alert("Pedido copiado")
 
 }
