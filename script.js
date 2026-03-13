@@ -1,14 +1,24 @@
 const setoresFixos = ["Bebidas","Confeitaria","Panificação"];
 let setores = [];
-let pedidos = {};
+let pedidos = {}; // pedidos armazenam só a quantidade por produto
+let produtosFixos = {
+  "Bebidas":["Água","Refrigerante","Suco"],
+  "Confeitaria":["Bolo","Donut","Torta"],
+  "Panificação":["Pão francês","Croissant","Pão de forma"]
+};
 
+// Inicialização
 function init() {
   setores = [...setoresFixos];
-  setores.forEach(s=>pedidos[s]=[]);
+  setores.forEach(s=>{
+    pedidos[s] = {};
+    produtosFixos[s].forEach(p => pedidos[s][p] = 0);
+  });
   renderTabs();
 }
 init();
 
+// Renderiza abas e conteúdo
 function renderTabs() {
   const tabs = document.getElementById("tabs");
   tabs.innerHTML="";
@@ -27,6 +37,7 @@ function renderTabs() {
   renderConteudo();
 }
 
+// Renderiza produtos com quantidade editável
 function renderConteudo(){
   const conteudo = document.getElementById("conteudo");
   conteudo.innerHTML="";
@@ -35,74 +46,67 @@ function renderConteudo(){
     div.className="setor";
     div.innerHTML=`<h3>${setor}</h3>`;
 
-    const inputNome = document.createElement("input");
-    inputNome.placeholder="Nome do produto";
+    if(!produtosFixos[setor]) produtosFixos[setor] = [];
 
-    const quantidade = document.createElement("input");
-    quantidade.type="number";
-    quantidade.min=1;
-    quantidade.value=1;
-    quantidade.style.width="60px";
+    produtosFixos[setor].forEach(prod=>{
+      if(pedidos[setor][prod] === undefined) pedidos[setor][prod]=0;
 
-    const qtdBtns = [1,2,3,4].map(n=>{
-      const b=document.createElement("button");
-      b.textContent=n;
-      b.onclick=()=>{quantidade.value = parseInt(quantidade.value)+n;};
-      return b;
-    });
+      const itemDiv = document.createElement("div");
+      itemDiv.className="item";
 
-    const btnAdd = document.createElement("button");
-    btnAdd.textContent="Adicionar";
-    btnAdd.onclick=()=>{
-      if(!inputNome.value) return;
-      if(!pedidos[setor]) pedidos[setor]=[];
-      pedidos[setor].push({nome: inputNome.value,qtd:parseInt(quantidade.value)});
-      inputNome.value="";
-      quantidade.value=1;
-      salvar();
-      renderConteudo();
-    };
+      const span = document.createElement("span");
+      span.textContent = prod;
 
-    div.appendChild(inputNome);
-    div.appendChild(quantidade);
-    qtdBtns.forEach(b=>div.appendChild(b));
-    div.appendChild(btnAdd);
+      const qtdInput = document.createElement("input");
+      qtdInput.type="number";
+      qtdInput.min=0;
+      qtdInput.value = pedidos[setor][prod];
+      qtdInput.style.width="60px";
+      qtdInput.onchange = () => {
+        pedidos[setor][prod] = parseInt(qtdInput.value) || 0;
+        salvar();
+      };
 
-    if(pedidos[setor]){
-      pedidos[setor].forEach((item,i)=>{
-        const itemDiv = document.createElement("div");
-        itemDiv.className="item";
-        itemDiv.textContent=`${item.nome} - ${item.qtd}`;
-        const delBtn=document.createElement("button");
-        delBtn.textContent="X";
-        delBtn.onclick=()=>{
-          pedidos[setor].splice(i,1);
+      // Botões rápidos 1/2/3/4
+      [1,2,3,4].forEach(n=>{
+        const b = document.createElement("button");
+        b.textContent = n;
+        b.onclick = () => {
+          pedidos[setor][prod] += n;
+          qtdInput.value = pedidos[setor][prod];
           salvar();
-          renderConteudo();
         }
-        itemDiv.appendChild(delBtn);
-        div.appendChild(itemDiv);
+        itemDiv.appendChild(b);
       });
-    }
+
+      itemDiv.appendChild(span);
+      itemDiv.appendChild(qtdInput);
+
+      div.appendChild(itemDiv);
+    });
 
     conteudo.appendChild(div);
   });
 }
 
+// Novo setor
 function novoSetor(){
   const nome = prompt("Nome do novo setor:");
   if(!nome) return;
   if(setores.includes(nome)) return alert("Setor já existe!");
   setores.push(nome);
-  pedidos[nome]=[];
+  pedidos[nome]={};
+  produtosFixos[nome]=[]; // sem produtos pré-definidos ainda
   salvar();
   renderTabs();
 }
 
+// Excluir setor
 function excluirSetor(nome){
   if(!confirm(`Deseja excluir o setor ${nome}?`)) return;
   setores = setores.filter(s=>s!==nome);
   delete pedidos[nome];
+  delete produtosFixos[nome];
   salvar();
   renderTabs();
 }
@@ -115,16 +119,17 @@ function finalizarPedido(){
   modal.style.display="flex";
 
   setores.forEach(setor=>{
-    if(pedidos[setor] && pedidos[setor].length>0){
+    const produtosSetor = Object.keys(pedidos[setor]).filter(p=>pedidos[setor][p]>0);
+    if(produtosSetor.length>0){
       const divSetor = document.createElement("div");
       divSetor.className="pedido-setor";
       const h = document.createElement("h3");
-      h.textContent=`Pedido ${setor}`;
+      h.textContent = `Pedido ${setor}`;
       divSetor.appendChild(h);
 
-      pedidos[setor].forEach(item=>{
+      produtosSetor.forEach(prod=>{
         const p = document.createElement("p");
-        p.textContent=`${item.nome} - ${item.qtd}`;
+        p.textContent = `${prod} - ${pedidos[setor][prod]}`;
         divSetor.appendChild(p);
       });
 
@@ -148,19 +153,25 @@ function finalizarPedido(){
   }
 }
 
+// Fechar modal
 function fecharModal(){
   document.getElementById("modalPedido").style.display="none";
 }
 
+// Salvar no localStorage
 function salvar(){
   localStorage.setItem("pedidosApp_setores",JSON.stringify(setores));
   localStorage.setItem("pedidosApp_pedidos",JSON.stringify(pedidos));
+  localStorage.setItem("pedidosApp_produtosFixos",JSON.stringify(produtosFixos));
 }
 
+// Recuperar do localStorage
 window.onload=()=>{
   const s = localStorage.getItem("pedidosApp_setores");
   const p = localStorage.getItem("pedidosApp_pedidos");
+  const pf = localStorage.getItem("pedidosApp_produtosFixos");
   if(s) setores = JSON.parse(s);
   if(p) pedidos = JSON.parse(p);
+  if(pf) produtosFixos = JSON.parse(pf);
   renderTabs();
 }
