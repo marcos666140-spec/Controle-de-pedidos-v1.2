@@ -1,92 +1,125 @@
-const setoresFixos = ["Bebidas","Confeitaria","Panificação"]
+const setores = ["Bebidas","Confeitaria","Panificação"]
 
-let dados = JSON.parse(localStorage.getItem("dadosPedidos")) || {}
+let dados = JSON.parse(localStorage.getItem("pedidos")) || {}
 
-setoresFixos.forEach(setor=>{
-if(!dados[setor]) dados[setor] = {}
+setores.forEach(s=>{
+if(!dados[s]) dados[s] = {}
 })
 
 function salvar(){
-localStorage.setItem("dadosPedidos",JSON.stringify(dados))
+localStorage.setItem("pedidos",JSON.stringify(dados))
 }
 
 function render(){
+
 const container = document.getElementById("setores")
+
 container.innerHTML=""
 
-setoresFixos.forEach(setor=>{
+setores.forEach(setor=>{
 
-const div = document.createElement("div")
-div.className="setor"
+const box = document.createElement("div")
+box.className="setor"
 
-const titulo = document.createElement("div")
-titulo.className="setorTitulo"
+const header = document.createElement("div")
+header.className="setorHeader"
+
+const titulo = document.createElement("span")
 titulo.innerText=setor
 
-const produtosDiv = document.createElement("div")
-produtosDiv.className="produtos"
+const limpar = document.createElement("button")
+limpar.innerText="🗑"
+limpar.className="lixeira"
 
-titulo.onclick=()=>{
-produtosDiv.style.display =
-produtosDiv.style.display==="block"?"none":"block"
+limpar.onclick=()=>{
+
+for(let p in dados[setor]){
+dados[setor][p] = ""
 }
 
-for(let produto in dados[setor]){
+salvar()
+render()
+
+}
+
+header.appendChild(titulo)
+header.appendChild(limpar)
+
+box.appendChild(header)
+
+for(let prod in dados[setor]){
 
 const linha = document.createElement("div")
 linha.className="produto"
 
 const nome = document.createElement("span")
-nome.innerText=produto
+nome.innerText=prod
 
 const qtd = document.createElement("input")
 qtd.type="number"
-qtd.value=dados[setor][produto]
-qtd.placeholder="0"
+qtd.value=dados[setor][prod]
 
 qtd.oninput=()=>{
-dados[setor][produto]=qtd.value
+dados[setor][prod] = qtd.value
 salvar()
 }
 
-const del = document.createElement("button")
-del.innerText="X"
-del.className="excluir"
+const btns = document.createElement("div")
+btns.className="qtdBtns"
 
-del.onclick=()=>{
-delete dados[setor][produto]
+;[1,2,5,10,20].forEach(n=>{
+
+const b = document.createElement("button")
+
+b.innerText=n
+
+b.onclick=()=>{
+
+let atual = parseInt(qtd.value) || 0
+
+qtd.value = atual + n
+
+dados[setor][prod] = qtd.value
+
 salvar()
-render()
+
 }
+
+btns.appendChild(b)
+
+})
 
 linha.appendChild(nome)
 linha.appendChild(qtd)
-linha.appendChild(del)
+linha.appendChild(btns)
 
-produtosDiv.appendChild(linha)
+box.appendChild(linha)
 
 }
 
 const add = document.createElement("button")
+
 add.innerText="+ Produto"
+
 add.className="addProduto"
 
 add.onclick=()=>{
-const nome = prompt("Nome do produto")
+
+let nome = prompt("Produto")
 
 if(!nome) return
 
 dados[setor][nome] = ""
+
 salvar()
+
 render()
+
 }
 
-produtosDiv.appendChild(add)
+box.appendChild(add)
 
-div.appendChild(titulo)
-div.appendChild(produtosDiv)
-
-container.appendChild(div)
+container.appendChild(box)
 
 })
 
@@ -96,16 +129,17 @@ render()
 
 document.getElementById("finalizarBtn").onclick=()=>{
 
-const resumo = document.getElementById("pedidoFinal")
-resumo.innerHTML=""
+const final = document.getElementById("pedidoFinal")
+
+final.innerHTML=""
 
 for(let setor in dados){
 
-let itens = ""
+let itens=""
 
 for(let prod in dados[setor]){
 
-if(dados[setor][prod] && dados[setor][prod] > 0){
+if(dados[setor][prod] > 0){
 
 itens += `<div>${prod} - ${dados[setor][prod]}</div>`
 
@@ -115,10 +149,7 @@ itens += `<div>${prod} - ${dados[setor][prod]}</div>`
 
 if(itens){
 
-resumo.innerHTML += `
-<h3>${setor}</h3>
-${itens}
-`
+final.innerHTML += `<h3>${setor}</h3>${itens}`
 
 }
 
@@ -129,7 +160,9 @@ document.getElementById("modal").style.display="flex"
 }
 
 function fecharModal(){
+
 document.getElementById("modal").style.display="none"
+
 }
 
 function copiarPedido(){
@@ -142,7 +175,7 @@ let itens=""
 
 for(let prod in dados[setor]){
 
-if(dados[setor][prod] && dados[setor][prod] > 0){
+if(dados[setor][prod] > 0){
 
 itens += `${prod} - ${dados[setor][prod]}\n`
 
@@ -160,6 +193,6 @@ texto += `${setor}\n${itens}\n`
 
 navigator.clipboard.writeText(texto)
 
-alert("Pedido copiado")
+alert("Copiado")
 
 }
