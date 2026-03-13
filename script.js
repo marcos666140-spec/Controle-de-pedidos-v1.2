@@ -1,7 +1,10 @@
+const tabs = document.getElementById("tabs")
+const conteudo = document.getElementById("conteudo")
+
 let setores = JSON.parse(localStorage.getItem("setores")) || [
-{nome:"Bebidas",icone:"fa-wine-bottle"},
-{nome:"Confeitaria",icone:"fa-cake-candles"},
-{nome:"Panificação",icone:"fa-bread-slice"}
+"Bebidas",
+"Confeitaria",
+"Panificação"
 ]
 
 let dados = JSON.parse(localStorage.getItem("dados")) || {}
@@ -13,108 +16,104 @@ localStorage.setItem("dados",JSON.stringify(dados))
 
 }
 
-function render(){
-
-let tabs = document.getElementById("tabs")
-let conteudo = document.getElementById("conteudo")
+function criarTabs(){
 
 tabs.innerHTML=""
-conteudo.innerHTML=""
 
-setores.forEach((s,i)=>{
+setores.forEach((nome,i)=>{
 
-tabs.innerHTML+=`
-<div class="tab ${i==0?"active":""}" onclick="abrir(${i})">
-<i class="fa-solid ${s.icone}"></i> ${s.nome}
-</div>
-`
+let t=document.createElement("div")
+t.className="tab"
+t.innerHTML=nome
 
-conteudo.innerHTML+=`
-<div class="setor ${i==0?"active":""}" id="setor${i}">
-<div class="lista"></div>
-<button onclick="novoItem(${i})">+ Produto</button>
-</div>
-`
+t.onclick=()=>abrirSetor(i)
 
-if(!dados[i]) dados[i]=[]
-
-dados[i].forEach(item=>{
-
-criarItem(i,item.produto,item.qtd,item.vendedor)
+tabs.appendChild(t)
 
 })
-
-})
-
-salvar()
 
 }
 
-function abrir(i){
+function abrirSetor(i){
 
 document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
-document.querySelectorAll(".setor").forEach(s=>s.classList.remove("active"))
+tabs.children[i].classList.add("active")
 
-document.querySelectorAll(".tab")[i].classList.add("active")
-document.getElementById("setor"+i).classList.add("active")
+conteudo.innerHTML=""
 
-}
-
-function criarItem(sec,produto="",qtd="",vendedor=""){
-
-let lista=document.querySelector(`#setor${sec} .lista`)
+let setor=setores[i]
 
 let div=document.createElement("div")
+div.className="setor active"
 
-div.className="item"
+let lista=dados[setor] || []
 
-div.innerHTML=`
-<input placeholder="Produto" value="${produto}">
-<input type="number" placeholder="Qtd" style="width:60px" value="${qtd}">
-<input placeholder="Vendedor" value="${vendedor}">
-`
+lista.forEach(item=>{
 
-div.addEventListener("input",atualizar)
-
-lista.appendChild(div)
-
-}
-
-function novoItem(sec){
-
-criarItem(sec)
-
-atualizar()
-
-}
-
-function atualizar(){
-
-dados={}
-
-setores.forEach((s,i)=>{
-
-dados[i]=[]
-
-let itens=document.querySelectorAll(`#setor${i} .item`)
-
-itens.forEach(it=>{
-
-let inputs=it.querySelectorAll("input")
-
-dados[i].push({
-
-produto:inputs[0].value,
-qtd:inputs[1].value,
-vendedor:inputs[2].value
+div.appendChild(criarItem(setor,item))
 
 })
 
-})
+let botao=document.createElement("button")
+botao.innerHTML="+ Produto"
 
-})
+botao.onclick=()=>{
+
+let novo={produto:"",qtd:"",vendedor:""}
+
+if(!dados[setor]) dados[setor]=[]
+
+dados[setor].push(novo)
+
+div.insertBefore(criarItem(setor,novo),botao)
 
 salvar()
+
+}
+
+div.appendChild(botao)
+
+conteudo.appendChild(div)
+
+}
+
+function criarItem(setor,item){
+
+let div=document.createElement("div")
+div.className="item"
+
+let produto=document.createElement("input")
+produto.placeholder="Produto"
+produto.value=item.produto
+
+produto.oninput=()=>{
+item.produto=produto.value
+salvar()
+}
+
+let qtd=document.createElement("input")
+qtd.placeholder="Qtd"
+qtd.value=item.qtd
+
+qtd.oninput=()=>{
+item.qtd=qtd.value
+salvar()
+}
+
+let vendedor=document.createElement("input")
+vendedor.placeholder="Vendedor"
+vendedor.value=item.vendedor
+
+vendedor.oninput=()=>{
+item.vendedor=vendedor.value
+salvar()
+}
+
+div.appendChild(produto)
+div.appendChild(qtd)
+div.appendChild(vendedor)
+
+return div
 
 }
 
@@ -122,37 +121,39 @@ function novoSetor(){
 
 let nome=prompt("Nome do setor")
 
-if(nome){
+if(!nome) return
 
-setores.push({nome:nome,icone:"fa-box"})
+setores.push(nome)
 
 salvar()
 
-render()
-
-}
+criarTabs()
 
 }
 
 function finalizarPedido(){
 
-let texto="PEDIDO\n\n"
+let texto=""
 
-setores.forEach((s,i)=>{
+for(let setor of setores){
 
-let itens=dados[i]
+let lista=dados[setor]
 
-if(itens && itens.length){
+if(!lista) continue
 
-texto+=s.nome+"\n"
+let itens=lista.filter(i=>i.produto)
 
-itens.forEach(it=>{
+if(itens.length==0) continue
 
-if(it.produto){
+texto+=setor.toUpperCase()+"\n"
 
-texto+=`${it.qtd}x ${it.produto} - ${it.vendedor}\n`
+itens.forEach(i=>{
 
-}
+texto+=`${i.qtd || "-"} x ${i.produto}`
+
+if(i.vendedor) texto+=` (${i.vendedor})`
+
+texto+="\n"
 
 })
 
@@ -160,19 +161,17 @@ texto+="\n"
 
 }
 
-})
+document.getElementById("pedidoFinal").classList.remove("hidden")
 
 document.getElementById("textoPedido").value=texto
-
-document.getElementById("pedidoFinal").classList.remove("hidden")
 
 }
 
 function copiarPedido(){
 
-let texto=document.getElementById("textoPedido")
+let txt=document.getElementById("textoPedido")
 
-texto.select()
+txt.select()
 
 document.execCommand("copy")
 
@@ -180,4 +179,6 @@ alert("Pedido copiado!")
 
 }
 
-render()
+criarTabs()
+
+abrirSetor(0)
