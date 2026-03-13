@@ -1,6 +1,6 @@
 const setoresFixos = ["Bebidas","Confeitaria","Panificação"];
 let setores = [];
-let pedidos = {}; // pedidos armazenam só a quantidade por produto
+let pedidos = {}; // vai armazenar a quantidade
 let produtosFixos = {
   "Bebidas":["Água","Refrigerante","Suco"],
   "Confeitaria":["Bolo","Donut","Torta"],
@@ -12,7 +12,7 @@ function init() {
   setores = [...setoresFixos];
   setores.forEach(s=>{
     pedidos[s] = {};
-    produtosFixos[s].forEach(p => pedidos[s][p] = 0);
+    produtosFixos[s].forEach(p => pedidos[s][p] = 0); // ainda armazenamos 0
   });
   renderTabs();
 }
@@ -37,7 +37,7 @@ function renderTabs() {
   renderConteudo();
 }
 
-// Renderiza produtos com quantidade editável
+// Renderiza produtos com quantidade editável (input em branco)
 function renderConteudo(){
   const conteudo = document.getElementById("conteudo");
   conteudo.innerHTML="";
@@ -60,7 +60,8 @@ function renderConteudo(){
       const qtdInput = document.createElement("input");
       qtdInput.type="number";
       qtdInput.min=0;
-      qtdInput.value = pedidos[setor][prod];
+      qtdInput.placeholder="0"; // input começa vazio
+      qtdInput.value = pedidos[setor][prod] || ""; // não mostra 0
       qtdInput.style.width="60px";
       qtdInput.onchange = () => {
         pedidos[setor][prod] = parseInt(qtdInput.value) || 0;
