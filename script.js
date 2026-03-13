@@ -44,13 +44,13 @@ conteudo.innerHTML=""
 let setor=setores[i]
 
 let div=document.createElement("div")
-div.className="setor active"
+div.className="setor"
 
-let lista=dados[setor] || []
+if(!dados[setor]) dados[setor]=[]
 
-lista.forEach(item=>{
+dados[setor].forEach(produto=>{
 
-div.appendChild(criarItem(setor,item))
+div.appendChild(criarItem(setor,produto))
 
 })
 
@@ -59,15 +59,17 @@ botao.innerHTML="+ Produto"
 
 botao.onclick=()=>{
 
-let novo={produto:"",qtd:"",vendedor:""}
+let nome=prompt("Nome do produto")
 
-if(!dados[setor]) dados[setor]=[]
+if(!nome) return
+
+let novo={produto:nome,qtd:""}
 
 dados[setor].push(novo)
 
-div.insertBefore(criarItem(setor,novo),botao)
-
 salvar()
+
+abrirSetor(i)
 
 }
 
@@ -82,14 +84,9 @@ function criarItem(setor,item){
 let div=document.createElement("div")
 div.className="item"
 
-let produto=document.createElement("input")
-produto.placeholder="Produto"
-produto.value=item.produto
-
-produto.oninput=()=>{
-item.produto=produto.value
-salvar()
-}
+let nome=document.createElement("div")
+nome.innerText=item.produto
+nome.style.fontWeight="600"
 
 let qtd=document.createElement("input")
 qtd.placeholder="Qtd"
@@ -100,18 +97,8 @@ item.qtd=qtd.value
 salvar()
 }
 
-let vendedor=document.createElement("input")
-vendedor.placeholder="Vendedor"
-vendedor.value=item.vendedor
-
-vendedor.oninput=()=>{
-item.vendedor=vendedor.value
-salvar()
-}
-
-div.appendChild(produto)
+div.appendChild(nome)
 div.appendChild(qtd)
-div.appendChild(vendedor)
 
 return div
 
@@ -135,34 +122,29 @@ function finalizarPedido(){
 
 let texto=""
 
-for(let setor of setores){
+setores.forEach(setor=>{
 
 let lista=dados[setor]
 
-if(!lista) continue
+if(!lista) return
 
-let itens=lista.filter(i=>i.produto)
+let ativos=lista.filter(p=>p.qtd)
 
-if(itens.length==0) continue
+if(ativos.length==0) return
 
 texto+=setor.toUpperCase()+"\n"
 
-itens.forEach(i=>{
+ativos.forEach(p=>{
 
-texto+=`${i.qtd || "-"} x ${i.produto}`
-
-if(i.vendedor) texto+=` (${i.vendedor})`
-
-texto+="\n"
+texto+=`${p.qtd} x ${p.produto}\n`
 
 })
 
 texto+="\n"
 
-}
+})
 
 document.getElementById("pedidoFinal").classList.remove("hidden")
-
 document.getElementById("textoPedido").value=texto
 
 }
@@ -180,5 +162,4 @@ alert("Pedido copiado!")
 }
 
 criarTabs()
-
 abrirSetor(0)
