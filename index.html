@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Pedidos</title>
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1><i class="fa-solid fa-cart-shopping"></i> Pedidos</h1>
+
+</header>
+
+<div id="tabs"></div>
+
+<button class="addSetor" onclick="novoSetor()">
+<i class="fa-solid fa-plus"></i> Setor
+</button>
+
+<div id="conteudo"></div>
+
+<button class="finalizar" onclick="finalizarPedido()">
+<i class="fa-solid fa-check"></i> Finalizar Pedido
+</button>
+
+<div id="pedidoFinal" class="hidden">
+
+<h2>Pedido</h2>
+
+<textarea id="textoPedido"></textarea>
+
+<button onclick="copiarPedido()">
+<i class="fa-solid fa-copy"></i> Copiar Pedido
+</button>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+navigator.serviceWorker.register("service-worker.js")
+
+}
+
+</script>
+
+</body>
+</html>
