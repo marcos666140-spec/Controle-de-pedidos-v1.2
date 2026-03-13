@@ -3,6 +3,7 @@ body{
 font-family:system-ui;
 background:#f2f2f2;
 padding:15px;
+margin:0;
 
 }
 
@@ -30,11 +31,12 @@ margin-bottom:10px;
 
 .tab{
 
-padding:8px 12px;
+padding:10px 12px;
 background:white;
 border-radius:8px;
 cursor:pointer;
 box-shadow:0 2px 5px rgba(0,0,0,0.1);
+font-size:14px;
 
 }
 
@@ -49,7 +51,7 @@ color:white;
 
 display:none;
 background:white;
-padding:10px;
+padding:12px;
 border-radius:10px;
 box-shadow:0 2px 5px rgba(0,0,0,0.1);
 
@@ -61,19 +63,27 @@ display:block;
 
 }
 
+/* itens agora em layout vertical */
+
 .item{
 
 display:flex;
+flex-direction:column;
 gap:6px;
-margin-bottom:6px;
+margin-bottom:12px;
 
 }
 
+/* inputs ocupam toda largura */
+
 input{
 
-padding:6px;
-border-radius:6px;
+width:100%;
+padding:10px;
+border-radius:8px;
 border:1px solid #ccc;
+box-sizing:border-box;
+font-size:14px;
 
 }
 
@@ -83,15 +93,32 @@ border:none;
 padding:10px;
 border-radius:8px;
 cursor:pointer;
+font-size:14px;
 
 }
+
+/* botão adicionar produto */
+
+.setor button{
+
+width:100%;
+margin-top:8px;
+background:#eeeeee;
+
+}
+
+/* botão adicionar setor */
 
 .addSetor{
 
 background:#ff9800;
 color:white;
+width:100%;
+margin-bottom:10px;
 
 }
+
+/* botão finalizar */
 
 .finalizar{
 
@@ -103,19 +130,26 @@ font-size:16px;
 
 }
 
+/* tela pedido final */
+
 #pedidoFinal{
 
 margin-top:20px;
 background:white;
 padding:15px;
 border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
 
 }
 
 textarea{
 
 width:100%;
-height:200px;
+height:220px;
+padding:10px;
+box-sizing:border-box;
+border-radius:8px;
+border:1px solid #ccc;
 margin-bottom:10px;
 
 }
