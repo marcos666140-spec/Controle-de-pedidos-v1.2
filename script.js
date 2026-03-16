@@ -216,3 +216,23 @@ container.appendChild(box)
 }
 
 render()
+/* EXPORTAR PRODUTOS */
+
+document.getElementById("exportarDados").onclick=()=>{
+
+const dadosBackup = localStorage.getItem("pedidos")
+
+const blob = new Blob([dadosBackup],{type:"application/json"})
+
+const url = URL.createObjectURL(blob)
+
+const a = document.createElement("a")
+
+a.href = url
+a.download = "produtos-backup.json"
+
+a.click()
+
+URL.revokeObjectURL(url)
+
+}
